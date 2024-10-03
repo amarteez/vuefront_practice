@@ -5,11 +5,11 @@
 </template>
 
 <script>
-import ContactForm from './components/ContactForm.vue'; // Importa el componente
+import ContactForm from './components/ContactForm.vue';
 
 export default {
   components: {
-    ContactForm // Declara el componente para usarlo en el template
+    ContactForm
   }
 };
 </script>

@@ -4,11 +4,8 @@
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="name">Name</label>
-        <AutoComplete 
+        <InputText 
           v-model="formData.name" 
-          :suggestions="items" 
-          @complete="search" 
-          :invalid="formData.name === ''" 
           placeholder="Name" 
           required 
         />
@@ -34,12 +31,12 @@
     </form>
 
     <!-- Botón para redirigir a la página de datos -->
-    <router-link to="/data"> <!-- Utilizar router-link para la navegación -->
+    <router-link to="/data">
       <Button label="View Submitted Data" class="view-data-btn" />
     </router-link>
 
     <!-- Modal -->
-    <Dialog :visible="modalVisible" modal @hide="modalVisible = false">
+    <Dialog :visible="modalVisible" modal @hide="resetForm">
       <template #header>
         <h3>Form Data</h3>
       </template>
@@ -47,7 +44,7 @@
       <p><strong>Email:</strong> {{ formData.email }}</p>
       <p><strong>Message:</strong> {{ formData.message }}</p>
       <template #footer>
-        <Button label="Close" @click="modalVisible = false" />
+        <Button label="Close" @click="resetForm" />
       </template>
     </Dialog>
   </div>
@@ -55,7 +52,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import AutoComplete from 'primevue/autocomplete';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -66,19 +62,35 @@ const formData = ref({
   message: ''
 });
 const modalVisible = ref(false);
-const items = ref([]);
 
-const search = (event) => {
-  items.value = [...Array(10).keys()].map((item) => event.query + '-' + item);
+const handleSubmit = async () => {
+  try {
+    const response = await fetch('http://localhost:3001/contactos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData.value),
+    });
+
+    if (response.ok) {
+      modalVisible.value = true; // Muestra el modal al enviar
+    } else {
+      console.error('Error al enviar los datos');
+    }
+  } catch (error) {
+    console.error('Error al enviar los datos:', error);
+  }
 };
 
-const handleSubmit = () => {
-  modalVisible.value = true; // Muestra el modal al enviar
-  // Aquí puedes agregar lógica para enviar los datos al backend si lo necesitas.
+// Función para reiniciar el formulario y cerrar el modal
+const resetForm = () => {
+  formData.value.name = '';
+  formData.value.email = '';
+  formData.value.message = '';
+  modalVisible.value = false; // Cierra el modal
 };
 </script>
-
-
 
 <style scoped>
 /* Aquí puedes mantener tus estilos originales o modificarlos según sea necesario */

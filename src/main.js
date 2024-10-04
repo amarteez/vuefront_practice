@@ -11,4 +11,5 @@ const app = createApp(App);
 app.use(router);  // Usa el enrutador
 app.use(PrimeVue);
 
+
 app.mount('#app');

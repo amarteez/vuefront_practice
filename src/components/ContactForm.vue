@@ -4,54 +4,84 @@
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="name">Name</label>
-        <input type="text" v-model="formData.name" placeholder="Name" required />
+        <AutoComplete 
+          v-model="formData.name" 
+          :suggestions="items" 
+          @complete="search" 
+          :invalid="formData.name === ''" 
+          placeholder="Name" 
+          required 
+        />
       </div>
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" v-model="formData.email" placeholder="Email" required />
+        <InputText 
+          type="email" 
+          v-model="formData.email" 
+          placeholder="Email" 
+          required 
+        />
       </div>
       <div class="form-group">
         <label for="message">Message</label>
-        <textarea v-model="formData.message" placeholder="Message" required></textarea>
+        <textarea 
+          v-model="formData.message" 
+          placeholder="Message" 
+          required
+        ></textarea>
       </div>
-      <button type="submit">Submit</button>
+      <Button type="submit" label="Submit" />
     </form>
 
+    <!-- Botón para redirigir a la página de datos -->
+    <router-link to="/data"> <!-- Utilizar router-link para la navegación -->
+      <Button label="View Submitted Data" class="view-data-btn" />
+    </router-link>
+
     <!-- Modal -->
-    <div class="modal" v-if="modalVisible">
-      <div class="modal-content">
-        <span class="close" @click="modalVisible = false">&times;</span>
+    <Dialog :visible="modalVisible" modal @hide="modalVisible = false">
+      <template #header>
         <h3>Form Data</h3>
-        <p><strong>Name:</strong> {{ formData.name }}</p>
-        <p><strong>Email:</strong> {{ formData.email }}</p>
-        <p><strong>Message:</strong> {{ formData.message }}</p>
-        <button @click="modalVisible = false">Close</button>
-      </div>
-    </div>
+      </template>
+      <p><strong>Name:</strong> {{ formData.name }}</p>
+      <p><strong>Email:</strong> {{ formData.email }}</p>
+      <p><strong>Message:</strong> {{ formData.message }}</p>
+      <template #footer>
+        <Button label="Close" @click="modalVisible = false" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      formData: {
-        name: '',
-        email: '',
-        message: ''
-      },
-      modalVisible: false
-    };
-  },
-  methods: {
-    handleSubmit() {
-      this.modalVisible = true; // Muestra el modal al enviar
-    }
-  }
+<script setup>
+import { ref } from 'vue';
+import AutoComplete from 'primevue/autocomplete';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+
+const formData = ref({
+  name: '',
+  email: '',
+  message: ''
+});
+const modalVisible = ref(false);
+const items = ref([]);
+
+const search = (event) => {
+  items.value = [...Array(10).keys()].map((item) => event.query + '-' + item);
+};
+
+const handleSubmit = () => {
+  modalVisible.value = true; // Muestra el modal al enviar
+  // Aquí puedes agregar lógica para enviar los datos al backend si lo necesitas.
 };
 </script>
 
+
+
 <style scoped>
+/* Aquí puedes mantener tus estilos originales o modificarlos según sea necesario */
 .contact-form {
   background: #fff;
   padding: 2rem;
@@ -77,12 +107,6 @@ export default {
   display: block;
 }
 
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 0.5rem;
-}
-
 button {
   background-color: #007bff;
   color: white;
@@ -94,6 +118,16 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+/* Estilos para el botón de ver datos */
+.view-data-btn {
+  margin-top: 1rem;
+  background-color: #28a745;
+}
+
+.view-data-btn:hover {
+  background-color: #218838;
 }
 
 /* Estilos del modal */

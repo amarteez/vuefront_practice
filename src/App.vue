@@ -1,16 +1,12 @@
 <template>
   <div id="app">
-    <ContactForm />
+    <router-view /> <!-- Esto permite que el router renderice los componentes -->
   </div>
 </template>
 
 <script>
-import ContactForm from './components/ContactForm.vue';
-
 export default {
-  components: {
-    ContactForm
-  }
+  name: 'App'
 };
 </script>
 
@@ -23,5 +19,6 @@ export default {
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+    background-color: #fff;
 }
 </style>
